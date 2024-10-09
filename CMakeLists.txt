@@ -4,7 +4,10 @@ project(RadixSort LANGUAGES C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(Vulkan REQUIRED)
+if (NOT (${SUPPORT_WEBGPU} AND ${USE_WEBGPU_IMPL_DAWN}))
+    # Dawn ships custom headers and conflicts with Vulkan::Headers.
+    find_package(Vulkan REQUIRED)
+endif()
 
 function(shader header source source_list)
     get_filename_component(shader_bin_name ${header} NAME_WLE)
@@ -98,6 +101,10 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         target_link_libraries(unittest PUBLIC vk-radix-sort gtest gtest_main)
         target_include_directories(unittest PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} tests/radix_sort_vk_bench)
         target_compile_definitions(unittest PUBLIC RS_VK_TARGET_ARCHIVE_LINKABLE)
+        if (UNIX AND NOT APPLE)
+            target_link_libraries(benchmark PUBLIC tbb)
+            target_link_libraries(unittest PUBLIC tbb)
+        endif()
 
         gtest_add_tests(unittest "" AUTO)
     endif()
