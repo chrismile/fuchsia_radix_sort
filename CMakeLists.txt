@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(RadixSort LANGUAGES C)
 
+option(BUILD_TESTS "Build with tests support." OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (NOT (${SUPPORT_WEBGPU} AND ${USE_WEBGPU_IMPL_DAWN}))
@@ -75,7 +77,7 @@ target_link_libraries(vk-radix-sort PUBLIC Vulkan::Vulkan)
 target_include_directories(vk-radix-sort PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/lib ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(vk-radix-sort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(${BUILD_TESTS} AND CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
     if(BUILD_TESTING)
         enable_language(CXX)
