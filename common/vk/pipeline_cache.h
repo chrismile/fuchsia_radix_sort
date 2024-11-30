@@ -9,6 +9,10 @@
 //
 //
 
+#ifdef VOLK_INCLUDE_DIR
+#include <volk.h>
+#endif
+
 #include <vulkan/vulkan.h>
 
 //

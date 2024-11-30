@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(RadixSort LANGUAGES C)
 
 option(BUILD_TESTS "Build with tests support." OFF)
+option(VOLK_INCLUDE_DIR "Include directory containing volk.")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -73,9 +74,16 @@ add_library(vk-radix-sort STATIC
     ${shader_binary}
 )
 
-target_link_libraries(vk-radix-sort PUBLIC Vulkan::Vulkan)
+target_link_libraries(vk-radix-sort INTERFACE Vulkan::Vulkan)
+target_link_libraries(vk-radix-sort PRIVATE Vulkan::Headers)
 target_include_directories(vk-radix-sort PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/lib ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(vk-radix-sort PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+if (VOLK_INCLUDE_DIR)
+    target_compile_definitions(vk-radix-sort PRIVATE VK_NO_PROTOTYPES)
+    target_include_directories(vk-radix-sort PRIVATE ${VOLK_INCLUDE_DIR})
+    target_compile_definitions(vk-radix-sort PRIVATE VOLK_INCLUDE_DIR)
+endif()
 
 if(${BUILD_TESTS} AND CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
